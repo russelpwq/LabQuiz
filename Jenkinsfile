@@ -14,22 +14,6 @@ pipeline {
                 git url: 'https://github.com/russelpwq/LabQuiz.git', branch: 'main'
             }
         }
-
-        stage('Run Tests') {
-            steps {
-                // Run tests with pytest
-                script {
-                    sh 'venv/bin/pytest --maxfail=1 --disable-warnings -q'
-                }
-            }
-        }
-
-        stage('Archive Test Results') {
-            steps {
-                // Archive test results
-                junit 'test-results/results.xml'
-            }
-        }
         stage('OWASP Dependency-Check Vulnerabilities') {
             steps {
                 withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
@@ -55,11 +39,21 @@ pipeline {
                 }
             }
         }
+        stage('Run Tests') {
+            steps {
+                // Navigate to the folder containing tests and run pytest
+                dir('labproject/myapp') { 
+                    script {
+                        sh 'pytest'
+                    }
+                }
+            }
+        }
     }
 
     post {
         always {
-            // Clean up actions, such as removing the virtual environment
+            // Clean up actions
             script {
                 sh 'rm -rf venv'
             }
