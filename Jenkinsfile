@@ -50,6 +50,21 @@ pipeline {
                 junit 'test-results/results.xml'
             }
         }
+        stage('OWASP Dependency-Check Vulnerabilities') {
+            steps {
+                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+                    dependencyCheck additionalArguments: '''
+                        -o './'
+                        -s './'
+                        -f 'ALL'
+                        --prettyPrint
+                        --nvdApiKey '${NVD_API_KEY}'
+                    ''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+                    
+                    dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                }
+            }
+        }
     }
 
     post {
@@ -58,6 +73,9 @@ pipeline {
             script {
                 sh 'rm -rf venv'
             }
+        }
+        success {
+            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
         }
     }
 }
