@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Define environment variables if needed
+        // Define environment variables
         DJANGO_SETTINGS_MODULE = 'labproject.settings'
         PYTHONPATH = "${env.WORKSPACE}"
     }
@@ -37,17 +37,17 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                // Run integration tests
+                // Run tests with pytest
                 script {
-                    sh 'venv/bin/python manage.py test'
+                    sh 'venv/bin/pytest --maxfail=1 --disable-warnings -q'
                 }
             }
         }
 
-        stage('Post-Test Actions') {
+        stage('Archive Test Results') {
             steps {
-                // Archive test results, generate reports, etc.
-                junit '**/tests.xml'
+                // Archive test results
+                junit 'test-results/results.xml'
             }
         }
     }
