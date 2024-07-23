@@ -15,26 +15,6 @@ pipeline {
             }
         }
 
-        stage('Set Up Python Environment') {
-            steps {
-                // Set up Python environment
-                script {
-                    // Create and activate virtual environment
-                    sh 'python -m venv venv'
-                    sh 'source venv/bin/activate'
-                }
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                // Install project dependencies
-                script {
-                    sh 'venv/bin/pip install -r requirements.txt'
-                }
-            }
-        }
-
         stage('Run Tests') {
             steps {
                 // Run tests with pytest
